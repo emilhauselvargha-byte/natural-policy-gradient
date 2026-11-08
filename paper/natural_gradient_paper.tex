@@ -1112,6 +1112,13 @@ arm 2 (mean 8) & 31 & 12 & 30 & 6 & 39 & 36 & 29 & 40\\
 \caption{Bandit: dependence on the reference arm (natural gradient with $\varepsilon=0.1$; ``---'': target not reached in $100$ iterations).}\label{tab:bandit-refarm}
 \end{table}
 
+\paragraph{Important remark}
+Playing with multiple configurations for the bandit setup, in particular the number of arms, the mean rewards, and the variances, one can quickly observe that in many cases the vanilla gradient actually converges faster than the natural gradient by a few iterations. Despite this fact, this experiment demonstates multiple key advantages of the natural gradient over the vanilla gradient. First, the choice of initial policy which places very little weight on the best arm is an example of the sort of challenging scenario an agent might face in a more general MDP: the best action may not have the highest probability initially, and even with uniform initial distribution visitation biases can develop after a few rounds.
+Since in the vanilla gradient the update is proportional to the visitation, it can be very slow to escape from a local optimum. The natural gradient, on the other hand, cancels dependence on the visitation through the inverse of the Fisher matrix, and can thus escape from such plateauing behaviour -- this phenomenon is clearly reflected in the experiment above. 
+Second, the natural gradient was shown to be invariant under reparametrization of the policy, which is not true for the vanilla gradient. The experiment shows that arbitrary parametrization decisions, which are purely mathematical artefacts and should not impact the convergence of the algorithm, can have a significant effect on the convergence of the vanilla gradient and the expected return at its converged value. 
+Third, one could make the argument that the natural gradient is more rubust to hyperparameter tuning, as it converges at acceptable rates for a wide range of $\varepsilon$ values (from 0.01 to 0.3), while the vanilla gradient is very sensitive to the choice of learning rate, and values of $\alpha$ must be tested over multiple orders of magnitude (0.1 -> 1 -> 10) in order to find a good value. 
+Finally, the natural gradient is more robust to noise in the gradient estimate, as it was shown that the natural gradient converged to the target in all 40 runs for all $\varepsilon$ values, while the vanilla gradient failed to converge in many runs for all learning rates except for lr=2 with the middle arm as reference.
+
 % ---------------------------------------------------------------------
 \FloatBarrier
 \section{The gridworld}\label{sec:grid}
