@@ -53,7 +53,7 @@
     {\fbox{\parbox[c][5.5cm][c]{#1\linewidth}{\centering\small [placeholder: \texttt{\detokenize{figures/#2.pdf}}]}}}}
 
 % ---------- author block (edit here) ----------
-\newcommand{\paperauthor}{Hausel-Vargha Emil}
+\newcommand{\paperauthor}{Emil Hausel-Vargha}
 \newcommand{\paperaffil}{Course on Differential Geometry}
 
 \title{The Natural Policy Gradient through Differential Geometry:\\
@@ -210,8 +210,8 @@ and an infinitesimal displacement transforms by linearisation of $\varphi$; thus
   \Delta\theta'=J\,\Delta\theta .
 \end{equation}
 The components of the gradient transform like the basis vectors
-$\partial/\partial\theta_j=\sum_iJ_{ij}\,\partial/\partial\theta'_i$: they are \emph{covariant}. The components of a
-displacement transform in the opposite way, with $J$ instead of $J\T$: they are \emph{contravariant}.
+$\partial/\partial\theta_j=\sum_iJ_{ij}\,\partial/\partial\theta'_i$: they are covariant. The components of a
+displacement transform in the opposite way, with $J$ instead of $J\T$: they are contravariant.
 
 The plain update $\Delta\theta=\alpha\nabla_\theta\eta$ of \eqref{eq:reinforce} equates a contravariant object with a covariant one,
 and this can hold in at most one parametrization. Indeed, apply the same rule in the coordinates $\theta'$:
@@ -229,7 +229,7 @@ coordinates are unchanged, then $J=\diag(c,1,\dots,1)$ and
 \end{equation}
 the same family of policies, started from the same policy with the same $\alpha$, follows a different
 trajectory. Equivalently, the units of the two sides of the update differ, $[\theta_i]$ on the left and
-$[\eta]/[\theta_i]$ on the right. Kakade \cite{kakade2001} calls such a rule \emph{noncovariant}.
+$[\eta]/[\theta_i]$ on the right. Kakade \cite{kakade2001} calls such a rule noncovariant.
 
 The parameters merely label the policies, whereas the problem $\max_\pi\eta(\pi)$ concerns the policies themselves.
 We therefore regard the set of policies as a manifold and the parametrizations as charts, and look for an update which
@@ -814,7 +814,7 @@ not part of the metric, so it does not enter the Kullback--Leibler norm:
   \alpha=\sqrt{\frac{2\varepsilon}{q}},\qquad
   \theta\leftarrow\theta+\alpha\,\hat w,
 \end{equation}
-with $\alpha=0$ if $q$ is numerically zero. Plain gradient ascent is $\theta\leftarrow\theta+\mathrm{lr}\cdot\hat g$ with \eqref{eq:ghat}.
+with $\alpha=0$ if $q$ is numerically zero. Plain gradient ascent instead keeps the learning rate $\alpha$ fixed and steps $\theta\leftarrow\theta+\alpha\,\hat g$ with \eqref{eq:ghat}.
 
 \subsection{Step size and safeguards}
 
@@ -845,7 +845,7 @@ where $D_s$ is the block of $D$ of the state $s$ and $\Lambda_s=D_s^{-2}$ is the
 
 \begin{proposition}[Covariance of the implemented update]\label{prop:covariance-impl}
 Take $\Lambda_s=D_s^{-2}$, and measure the cap \eqref{eq:cap} in $\theta$-units, i.e.\ with $\|D^{-1}\Delta\psi\|_\infty\le c_{\max}$. Then $\hat w_{s,\psi}=D_s\hat w_{s,\theta}$, the quantities $q$ and $\alpha$ are the same in both charts, and
-$\Delta\theta=D^{-1}\Delta\psi$ is independent of $D$. Plain gradient ascent gives $\Delta\theta=\mathrm{lr}\,D^{-2}\hat g_\theta$, which is \eqref{eq:c2} with $c=\delta_i$.
+$\Delta\theta=D^{-1}\Delta\psi$ is independent of $D$. Plain gradient ascent gives $\Delta\theta=\alpha\,D^{-2}\hat g_\theta$, which is \eqref{eq:c2} with $c=\delta_i$.
 \end{proposition}
 
 \begin{proof}
@@ -862,7 +862,7 @@ where $n_{\mathrm{eff}}$, $\lambda_s$ and $c_s$ do not depend on the chart. Next
   \hat w_{s,\psi}\T\hat C_{s,\psi}\hat w_{s,\psi}=\hat w_{s,\theta}\T D_s\,D_s^{-1}\hat C_{s,\theta}D_s^{-1}\,D_s\hat w_{s,\theta}=\hat w_{s,\theta}\T\hat C_{s,\theta}\hat w_{s,\theta},
 \]
 so $q$ and $\alpha$ coincide, $\Delta\psi=\alpha\hat w_\psi=D\,\alpha\hat w_\theta$ and $\Delta\theta=D^{-1}\Delta\psi=\alpha\hat w_\theta$. The cap acts on $D^{-1}\Delta\psi=\Delta\theta$ and is therefore the same.
-For plain gradient ascent, $\hat g_\psi=D^{-1}\hat g_\theta$ by \eqref{eq:chart-psi}, so $\Delta\psi=\mathrm{lr}\,D^{-1}\hat g_\theta$ and $\Delta\theta=D^{-1}\Delta\psi=\mathrm{lr}\,D^{-2}\hat g_\theta$.
+For plain gradient ascent, $\hat g_\psi=D^{-1}\hat g_\theta$ by \eqref{eq:chart-psi}, so $\Delta\psi=\alpha\,D^{-1}\hat g_\theta$ and $\Delta\theta=D^{-1}\Delta\psi=\alpha\,D^{-2}\hat g_\theta$.
 \end{proof}
 
 A change of reference action is a non-diagonal linear change of chart (\eqref{eq:change-ref}): the exact natural direction is a vector of $T_p\mani$ and does not change, whereas the plain gradient step does. The cap
@@ -873,12 +873,12 @@ A change of reference action is a non-diagonal linear change of chart (\eqref{eq
 \begin{algorithm}[t]
 \caption{One sampled update (plain or natural).}\label{alg:update}
 \begin{algorithmic}[1]
-\Require chart coordinates $\psi$, scaling $D$; method with $\mathrm{lr}$ or $\varepsilon$; $\lambda_0,n_0,c_{\max},n_{\mathrm{ep}},T_{\max}$
+\Require chart coordinates $\psi$, scaling $D$; method with $\alpha$ or $\varepsilon$; $\lambda_0,n_0,c_{\max},n_{\mathrm{ep}},T_{\max}$
 \State $\theta\gets D^{-1}\psi$; policy $\pi_\theta$ by \eqref{eq:chart-inverse}; exact $V^\pi$ (baseline and bootstrap)
 \State sample $n_{\mathrm{ep}}$ episodes (cut at $T_{\max}$, bootstrapped); gains $G_m$
 \State $\hat A_m\gets G_m-V^\pi(s_m)$;\quad $\chi_m\gets D_{s_m}^{-1}\bigl(\iota(a_m)-\pio(s_m)\bigr)$ \Comment{\eqref{eq:features} in the chart $\Psi$}
 \If{plain}
-  \State $\hat g\gets\frac1{n_{\mathrm{ep}}}\sum_m\gamma^{t_m}\hat A_m\chi_m$ (blockwise);\quad $\Delta\psi\gets\mathrm{lr}\cdot\hat g$ \Comment{\eqref{eq:ghat}}
+  \State $\hat g\gets\frac1{n_{\mathrm{ep}}}\sum_m\gamma^{t_m}\hat A_m\chi_m$ (blockwise);\quad $\Delta\psi\gets\alpha\,\hat g$ \Comment{\eqref{eq:ghat}}
 \Else
   \ForAll{visited states $s$} \Comment{\eqref{eq:local-estimates}, \eqref{eq:neff}, \eqref{eq:statewise}}
     \State compute $\hat d_s,\hat C_s,\hat b_s,n_{\mathrm{eff}}(s)$ from the visits $M_s$
@@ -892,7 +892,7 @@ A change of reference action is a non-diagonal linear change of chart (\eqref{eq
 
 The exact (noise-free) version replaces lines 2--7 of \cref{alg:update} by the closed forms \eqref{eq:grad-closed} and \eqref{eq:natural-closed}:
 \begin{align*}
-  \Delta\psi&=\mathrm{lr}\,D^{-1}\bigl(u_p(s)\,\pi(b\mid s)\,A(s,b)\bigr)_{s,b} &&\text{(plain)},\\
+  \Delta\psi&=\alpha\,D^{-1}\bigl(u_p(s)\,\pi(b\mid s)\,A(s,b)\bigr)_{s,b} &&\text{(plain)},\\
   \Delta\psi&=\sqrt{\frac{2\varepsilon}{q}}\,D\bigl(A(s,b)-A(s,\aref)\bigr)_{s,b} &&\text{(natural)},
 \end{align*}
 with $q=\sum_sd_p(s)\Var_\pi[A(s,\cdot)]$. It is the object that the sampled algorithm approximates.
@@ -931,7 +931,7 @@ The finite MDP gives $V^\pi$, $Q^\pi$ and $u^\pi$ by linear algebra. With the tr
   Q^\pi(s,a)=r(s,a)+\gamma\,\E\bigl[V^\pi(s')\mid s,a\bigr],
 \]
 and $\eta=V^\pi(s_0)$. Value iteration gives the optimum $\eta^*$, and the greedy policy of the MDP with $R_{\mathrm{bonus}}=0$, evaluated in the true MDP, gives $\eta_{\mathrm{nb}}$, the return of a policy ignoring the bonuses. These exact quantities provide the
-ground truth of the checks and the noise-free runs, in which the exact gradient \eqref{eq:grad-closed} or the exact natural direction \eqref{eq:natural-closed} replaces its estimate. A run is \emph{solved} if its exact return reaches
+ground truth of the checks and the noise-free runs, in which the exact gradient \eqref{eq:grad-closed} or the exact natural direction \eqref{eq:natural-closed} replaces its estimate. A run is solved if its exact return reaches
 $\eta_{\mathrm{init}}+0.95\,(\eta^*-\eta_{\mathrm{init}})$ at some iteration.
 
 \begin{table}[!htbp]
@@ -950,7 +950,7 @@ Reference action & the last (best) arm & ``right''\\
 Samples per update & $N=100$ pulls & $n_{\mathrm{ep}}=6000$ episodes, $T_{\max}=1000$\\
 Regularisation & $\lambda=0.03/K=0.01$, $n_0=0$, $\tau=10^{-12}$ & $\lambda_0=0.05$, $n_0=10$\\
 Cap & $c_{\max}=10$ & $c_{\max}=50$\\
-Grids & $\mathrm{lr}\in\{0.1,0.5,2,8,30\}$, & $\mathrm{lr}\in\{0.003,\dots,3\}$ (7 values),\\
+Grids & $\alpha\in\{0.1,0.5,2,8,30\}$, & $\alpha\in\{0.003,\dots,3\}$ (7 values),\\
  & $\varepsilon\in\{0.01,0.03,0.1,0.3\}$ & $\varepsilon\in\{0.003,\dots,0.3\}$ (5 values)\\
 Runs & 60 updates, 40 seeds (exact: 100 updates) & 15 updates, 10 seeds (exact: 300 updates)\\
 \bottomrule
@@ -970,35 +970,35 @@ Runs & 60 updates, 40 seeds (exact: 100 updates) & 15 updates, 10 seeds (exact: 
 
 \subsection{Setup and verification}
 
-The best arm has mean $8$ but probability $0.02$ at the start, which gives $\eta_{\mathrm{init}}=2.360$ against $\eta^*=8$ and a success target $7.718$ (\cref{fig:bandit-rewards}). The manifold has dimension $K-1=2$.
+The best arm has mean $8$ but probability $0.02$ at the start, which gives $\eta_{\mathrm{init}}=2.36$ against $\eta^*=8$ and a success target $7.72$ (\cref{fig:bandit-rewards}). The manifold has dimension $K-1=2$.
 
 At the initial policy and in the chart with the last arm as reference, the objects of Part~I can be written out. First,
 \[
-  \eta=0.9\cdot2+0.08\cdot5+0.02\cdot8=2.360 .
+  \eta=0.9\cdot2+0.08\cdot5+0.02\cdot8=2.36 .
 \]
 The gradient \eqref{eq:grad-closed} and the Fisher matrix \eqref{eq:Cs} are
 \[
-  \nabla\tilde\eta=\bigl(\pi_b(\mu_b-\eta)\bigr)_{b=0,1}=\begin{pmatrix}-0.324\\0.2112\end{pmatrix},
+  \nabla\tilde\eta=\bigl(\pi_b(\mu_b-\eta)\bigr)_{b=0,1}=\begin{pmatrix}-0.32\\0.21\end{pmatrix},
   \qquad
-  C=\begin{pmatrix}0.09&-0.072\\-0.072&0.0736\end{pmatrix},
+  C=\begin{pmatrix}0.09&-0.07\\-0.07&0.07\end{pmatrix},
 \]
-with $\det C=0.00144$ and eigenvalues $0.1543$ and $0.0093$, so $C$ is positive definite. The natural direction \eqref{eq:natural-closed} and its check against \eqref{eq:natural-eq} are
+with $\det C=1.44\cdot10^{-3}$ and eigenvalues $0.15$ and $9.3\cdot10^{-3}$, so $C$ is positive definite. The natural direction \eqref{eq:natural-closed} and its check against \eqref{eq:natural-eq} are
 \[
   w=(\mu_b-\mu_{\aref})_{b=0,1}=\begin{pmatrix}-6\\-3\end{pmatrix},
   \qquad
-  Cw=\begin{pmatrix}0.09\cdot(-6)-0.072\cdot(-3)\\-0.072\cdot(-6)+0.0736\cdot(-3)\end{pmatrix}=\begin{pmatrix}-0.324\\0.2112\end{pmatrix}=\nabla\tilde\eta,
+  Cw=\begin{pmatrix}-0.32\\0.21\end{pmatrix}=\nabla\tilde\eta,
 \]
 and the squared Fisher length is
 \[
-  w\T Cw=\Var_{a\sim\pi}[\mu_a]=0.9\cdot4+0.08\cdot25+0.02\cdot64-2.36^2=1.3104 .
+  w\T Cw=\Var_{a\sim\pi}[\mu_a]=0.9\cdot4+0.08\cdot25+0.02\cdot64-2.36^2=1.31 .
 \]
 The gradient is dominated by the factors $\pi_b$ (the best arm has $\pi=0.02$ and is not even among the two coordinates, being the reference arm); the natural direction is not.
 
 The formulas of Part~I were also checked numerically in the notebook. The exact gradient \eqref{eq:grad-closed} agrees with finite differences of $\eta$ to $2.5\cdot10^{-10}$, and the linear solution of $Fw=\bar g$ agrees with the closed form $\mu_a-\mu_{\aref}$ to $9\cdot10^{-16}$.
-With a batch of $2\cdot10^5$ pulls the sampled directions have cosine $1.0000$ with the exact ones.
+With a batch of $2\cdot10^5$ pulls the sampled directions have cosine $1.00$ with the exact ones.
 
 \paragraph{Kullback--Leibler budget.}
-Taking the exact natural step of budget $\varepsilon$ and measuring the true Kullback--Leibler divergence (\cref{fig:bandit-kl}), the ratio $\mathrm{KL}/\varepsilon$ tends to $1$ as $\varepsilon\to0$ (it is $1.0$ at $10^{-4}$) and rises to about $3$ for $\varepsilon\approx1$: the budget \eqref{eq:budget} is a second-order statement, valid for small steps, and
+Taking the exact natural step of budget $\varepsilon$ and measuring the true Kullback--Leibler divergence (\cref{fig:bandit-kl}), the ratio $\mathrm{KL}/\varepsilon$ tends to $1$ as $\varepsilon\to0$ and rises to about $3$ for $\varepsilon\approx1$: the budget \eqref{eq:budget} is a second-order statement, valid for small steps, and
 least accurate here because the policy is close to the boundary of the simplex.
 
 \begin{figure}[!htbp]
@@ -1009,9 +1009,9 @@ least accurate here because the policy is close to the boundary of the simplex.
 
 \subsection{Noise-free comparison}
 
-With exact gradients (\cref{fig:bandit-exact}, \cref{tab:bandit-exact}) natural gradient closes the whole gap for all $\varepsilon$, and the number of iterations decreases monotonically with $\varepsilon$ (to $95\%$: $19$, $11$, $6$, $3$).
-Plain gradient ascent depends strongly on the learning rate: for $\mathrm{lr}\le0.5$ it does not reach the target (the gap closed after $100$ iterations is $46\%$ for $\mathrm{lr}=0.1$ and $79\%$ for $\mathrm{lr}=0.5$), and its curves show a plateau at $\eta=5$, the value of the middle arm: the gradient
-component of the best arm is proportional to $\pi=0.02$, so the policy first concentrates on the middle arm and escapes slowly. A large learning rate removes the plateau ($12$ iterations at $\mathrm{lr}=8$), but $\mathrm{lr}=30$ is slower ($30$ iterations): it overshoots onto the plateau.
+With exact gradients (\cref{fig:bandit-exact}, \cref{tab:bandit-exact}) natural gradient closes the whole gap for all $\varepsilon$, and the number of iterations decreases monotonically with $\varepsilon$.
+Plain gradient ascent depends strongly on the learning rate: for $\alpha\le0.5$ it does not reach the target, and its curves show a plateau at $\eta=5$, the value of the middle arm: the gradient
+component of the best arm is proportional to $\pi=0.02$, so the policy first concentrates on the middle arm and escapes slowly. A large learning rate removes the plateau, but $\alpha=30$ is slower again because it overshoots onto the plateau.
 
 \begin{figure}[!htbp]
 \centering
@@ -1026,12 +1026,12 @@ component of the best arm is proportional to $\pi=0.02$, so the policy first con
 \toprule
  & final $\eta$ & $50\%$ & $90\%$ & $95\%$ & $99\%$\\
 \midrule
-plain, $\mathrm{lr}=2$ & 7.986 & 23 & 29 & 31 & 45\\
-plain, $\mathrm{lr}=8$ & 7.997 & 10 & 12 & 12 & 13\\
-plain, $\mathrm{lr}=30$ & 7.999 & 29 & 30 & 30 & 30\\
-natural, $\varepsilon=0.01$ & 8.000 & 9 & 17 & 19 & 21\\
-natural, $\varepsilon=0.1$ & 8.000 & 3 & 5 & 6 & 7\\
-natural, $\varepsilon=0.3$ & 8.000 & 1 & 3 & 3 & 4\\
+plain, $\alpha=2$ & 7.99 & 23 & 29 & 31 & 45\\
+plain, $\alpha=8$ & 8.00 & 10 & 12 & 12 & 13\\
+plain, $\alpha=30$ & 8.00 & 29 & 30 & 30 & 30\\
+natural, $\varepsilon=0.01$ & 8.00 & 9 & 17 & 19 & 21\\
+natural, $\varepsilon=0.1$ & 8.00 & 3 & 5 & 6 & 7\\
+natural, $\varepsilon=0.3$ & 8.00 & 1 & 3 & 3 & 4\\
 \bottomrule
 \end{tabular}
 \caption{Bandit, exact gradients: iterations needed to close $50,90,95,99\%$ of the gap (excerpt).}\label{tab:bandit-exact}
@@ -1039,11 +1039,11 @@ natural, $\varepsilon=0.3$ & 8.000 & 1 & 3 & 3 & 4\\
 
 \subsection{Sampled comparison and the role of the damping}
 
-With samples (\cref{fig:bandit-sampled}, \cref{tab:bandit-sampled}), damped natural gradient solves all $40$ runs for every $\varepsilon$, with a worst final return of at least $7.995$, and the median number of pulls to the target decreases with $\varepsilon$ from $2150$ to $500$.
-Plain gradient ascent fails for $\mathrm{lr}\le0.5$ and, for larger learning rates, ends on the plateau at $\eta\approx5$ in some runs (worst final return $5.0$): $39$, $36$ and $29$ runs out of $40$ are solved for $\mathrm{lr}=2,8,30$.
+With samples (\cref{fig:bandit-sampled}, \cref{tab:bandit-sampled}), damped natural gradient solves all $40$ runs for every $\varepsilon$, and the number of pulls to the target decreases as $\varepsilon$ grows.
+Plain gradient ascent fails for $\alpha\le0.5$ and, for larger learning rates, ends on the plateau at $\eta\approx5$ in some of the runs, more of them as the learning rate grows.
 
-Without damping every run reaches the target but some collapse afterwards (worst final return between $3.6$ and $5.3$). The trace of the worst run ($\varepsilon=0.1$) shows the mechanism of \cref{sec:regularisation}: at iteration $7$ one arm of probability $\approx0.00$ is missing from the batch, the
-fitted weights reach $\|w\|_\infty=178$, and at iteration $8$ the policy has jumped from $(0.00,\,0.018,\,0.982)$ to $(0.835,\,0.002,\,0.163)$ and $\eta$ falls from $7.945$ to $2.985$. The unsampled arm carries no information in $\hat C$, and its fitted weight is determined by round-off and by its tiny probability.
+Without damping every run reaches the target but some collapse afterwards. The trace of the worst run ($\varepsilon=0.1$) shows the mechanism of \cref{sec:regularisation}: at iteration $7$ one arm of probability $\approx0.00$ is missing from the batch, the
+fitted weights reach $\|w\|_\infty=178$, and at iteration $8$ the policy has jumped from $(0.00,\,0.02,\,0.98)$ to $(0.84,\,0.00,\,0.16)$ and $\eta$ falls from $7.95$ to $2.99$. The unsampled arm carries no information in $\hat C$, and its fitted weight is determined by round-off and by its tiny probability.
 
 \begin{figure}[!htbp]
 \centering
@@ -1058,14 +1058,14 @@ fitted weights reach $\|w\|_\infty=178$, and at iteration $8$ the policy has jum
 \toprule
  & final $\eta$ & worst & solved & median pulls\\
 \midrule
-plain, $\mathrm{lr}=2$ & 7.892 & 5.038 & 39/40 & 3100\\
-plain, $\mathrm{lr}=8$ & 7.693 & 5.001 & 36/40 & 1300\\
-plain, $\mathrm{lr}=30$ & 7.175 & 5.000 & 29/40 & 1300\\
-natural, $\varepsilon=0.03$ & 7.999 & 7.997 & 40/40 & 1300\\
-natural, $\varepsilon=0.1$ & 8.000 & 7.997 & 40/40 & 700\\
-natural, $\varepsilon=0.3$ & 8.000 & 7.998 & 40/40 & 500\\
-natural, no damping, $\varepsilon=0.03$ & 7.834 & 4.386 & 40/40 & 1100\\
-natural, no damping, $\varepsilon=0.1$ & 7.889 & 3.583 & 40/40 & 600\\
+plain, $\alpha=2$ & 7.89 & 5.04 & 39/40 & 3100\\
+plain, $\alpha=8$ & 7.69 & 5.00 & 36/40 & 1300\\
+plain, $\alpha=30$ & 7.17 & 5.00 & 29/40 & 1300\\
+natural, $\varepsilon=0.03$ & 8.00 & 8.00 & 40/40 & 1300\\
+natural, $\varepsilon=0.1$ & 8.00 & 8.00 & 40/40 & 700\\
+natural, $\varepsilon=0.3$ & 8.00 & 8.00 & 40/40 & 500\\
+natural, no damping, $\varepsilon=0.03$ & 7.83 & 4.39 & 40/40 & 1100\\
+natural, no damping, $\varepsilon=0.1$ & 7.89 & 3.58 & 40/40 & 600\\
 \bottomrule
 \end{tabular}
 \caption{Bandit, sampled gradients, $40$ seeds, $60$ updates of $100$ pulls (excerpt).}\label{tab:bandit-sampled}
@@ -1074,9 +1074,8 @@ natural, no damping, $\varepsilon=0.1$ & 7.889 & 3.583 & 40/40 & 600\\
 \subsection{Dependence on the parametrization}
 
 \paragraph{Rescaling.}
-In a chart $\Psi=D\Theta$ with random diagonal $D$ (factors in $[1/3,3]$), the trajectories of natural gradient are unchanged up to round-off, while those of plain gradient ascent change (\cref{fig:bandit-rescale}). With the same seeds, the maximal difference in $\eta$ between the two charts is
-$8.9\cdot10^{-16}$ (exact) and $2.2\cdot10^{-15}$ (sampled) for natural gradient, against $2.97$ and $2.92$ for plain gradient ascent. The sensitivity test (right panel) shows that the window of good learning rates moves by a factor of about $c^2$ when the chart is rescaled by $c=3$, as
-predicted by \eqref{eq:c2}, while the curve of $\eta$ against $\varepsilon$ is the same in both charts (difference $3.6\cdot10^{-15}$).
+In a chart $\Psi=D\Theta$ with random diagonal $D$ (factors in $[1/3,3]$), the trajectories of natural gradient are unchanged up to round-off, while those of plain gradient ascent change (\cref{fig:bandit-rescale}). With the same seeds, the maximal difference in $\eta$ between the two charts is of order $10^{-15}$ for natural gradient, with exact or sampled gradients, against about $3$ for plain gradient ascent. The sensitivity test (right panel) shows that the window of good learning rates moves by a factor of about $c^2$ when the chart is rescaled by $c=3$, as
+predicted by \eqref{eq:c2}, while the curve of $\eta$ against $\varepsilon$ is the same in both charts up to round-off.
 
 \begin{figure}[!htbp]
 \centering
@@ -1085,14 +1084,13 @@ predicted by \eqref{eq:c2}, while the curve of $\eta$ against $\varepsilon$ is t
 \end{figure}
 
 \paragraph{Reference arm.}
-A change of reference arm is another chart, related to the first by the affine map \eqref{eq:change-ref}. The exact natural trajectory is the same for the three choices, while plain gradient ascent depends on it (\cref{fig:bandit-refarm}, \cref{tab:bandit-refarm}): at $\mathrm{lr}=8$ it needs $48$, $2$ or $12$ iterations
-when the worst, the middle or the best arm is the reference. The reference arm changes the iteration count at a fixed learning rate by a factor of up to $24$, and changes the best learning rate ($30$ for the worst arm, $8$ for the other two). With the middle arm as reference, plain gradient ascent
-reaches the target faster than natural gradient ($2$ iterations against $6$) and solves all $40$ sampled runs for $\mathrm{lr}\ge0.5$.
+A change of reference arm is another chart, related to the first by the affine map \eqref{eq:change-ref}. The exact natural trajectory is the same for the three choices, while plain gradient ascent depends on it (\cref{fig:bandit-refarm}, \cref{tab:bandit-refarm}). At a fixed learning rate the reference arm changes the iteration count by a factor of up to $24$, and it also changes which learning rate is best. With the middle arm as reference, plain gradient ascent
+reaches the target faster than natural gradient ($2$ iterations against $6$) and solves all $40$ sampled runs for $\alpha\ge0.5$.
 
 \begin{figure}[!htbp]
 \centering
 \figslot[0.95]{fig_bandit_refarm}
-\caption{Bandit, exact: plain gradient ascent ($\mathrm{lr}=2$) for the three choices of reference arm (left), and natural gradient (right).}\label{fig:bandit-refarm}
+\caption{Bandit, exact: plain gradient ascent ($\alpha=2$) for the three choices of reference arm (left), and natural gradient (right).}\label{fig:bandit-refarm}
 \end{figure}
 
 \begin{table}[!htbp]
@@ -1102,7 +1100,7 @@ reaches the target faster than natural gradient ($2$ iterations against $6$) and
 \toprule
  & \multicolumn{4}{c}{exact: iterations to target} & \multicolumn{4}{c}{sampled: solved runs of 40}\\
 \cmidrule(lr){2-5}\cmidrule(lr){6-9}
-reference arm & lr 2 & lr 8 & lr 30 & natural & lr 2 & lr 8 & lr 30 & natural\\
+reference arm & $\alpha=2$ & $\alpha=8$ & $\alpha=30$ & natural & $\alpha=2$ & $\alpha=8$ & $\alpha=30$ & natural\\
 \midrule
 arm 0 (mean 2) & --- & 48 & 4 & 6 & 3 & 15 & 26 & 39\\
 arm 1 (mean 5) & 5 & 2 & 2 & 6 & 40 & 40 & 40 & 40\\
@@ -1112,12 +1110,12 @@ arm 2 (mean 8) & 31 & 12 & 30 & 6 & 39 & 36 & 29 & 40\\
 \caption{Bandit: dependence on the reference arm (natural gradient with $\varepsilon=0.1$; ``---'': target not reached in $100$ iterations).}\label{tab:bandit-refarm}
 \end{table}
 
-\paragraph{Important remark}
-Playing with multiple configurations for the bandit setup, in particular the number of arms, the mean rewards, and the variances, one can quickly observe that in many cases the vanilla gradient actually converges faster than the natural gradient by a few iterations. Despite this fact, this experiment demonstates multiple key advantages of the natural gradient over the vanilla gradient. First, the choice of initial policy which places very little weight on the best arm is an example of the sort of challenging scenario an agent might face in a more general MDP: the best action may not have the highest probability initially, and even with uniform initial distribution visitation biases can develop after a few rounds.
+\subsection{Discussion}\label{sec:bandit-discussion}
+Playing with multiple configurations for the bandit setup, in particular the number of arms, the mean rewards, and the variances, one can quickly observe that in many cases the vanilla gradient actually converges faster than the natural gradient by a few iterations. Despite this fact, this experiment demonstrates multiple key advantages of the natural gradient over the vanilla gradient. First, the choice of initial policy which places very little weight on the best arm is an example of the sort of challenging scenario an agent might face in a more general MDP: the best action may not have the highest probability initially, and even with uniform initial distribution visitation biases can develop after a few rounds.
 Since in the vanilla gradient the update is proportional to the visitation, it can be very slow to escape from a local optimum. The natural gradient, on the other hand, cancels dependence on the visitation through the inverse of the Fisher matrix, and can thus escape from such plateauing behaviour -- this phenomenon is clearly reflected in the experiment above. 
 Second, the natural gradient was shown to be invariant under reparametrization of the policy, which is not true for the vanilla gradient. The experiment shows that arbitrary parametrization decisions, which are purely mathematical artefacts and should not impact the convergence of the algorithm, can have a significant effect on the convergence of the vanilla gradient and the expected return at its converged value. 
-Third, one could make the argument that the natural gradient is more rubust to hyperparameter tuning, as it converges at acceptable rates for a wide range of $\varepsilon$ values (from 0.01 to 0.3), while the vanilla gradient is very sensitive to the choice of learning rate, and values of $\alpha$ must be tested over multiple orders of magnitude (0.1 -> 1 -> 10) in order to find a good value. 
-Finally, the natural gradient is more robust to noise in the gradient estimate, as it was shown that the natural gradient converged to the target in all 40 runs for all $\varepsilon$ values, while the vanilla gradient failed to converge in many runs for all learning rates except for lr=2 with the middle arm as reference.
+Third, one could make the argument that the natural gradient is more robust to hyperparameter tuning, as it converges at acceptable rates for a wide range of $\varepsilon$ values (from $0.01$ to $0.3$), while the vanilla gradient is very sensitive to the choice of learning rate, and values of $\alpha$ must be tested over multiple orders of magnitude ($0.1\to1\to10$) in order to find a good value. 
+Finally, the natural gradient is more robust to noise in the gradient estimate, as it was shown that the natural gradient converged to the target in all $40$ runs for all $\varepsilon$ values, while the vanilla gradient failed to converge in some of the runs for every learning rate, unless the middle arm was chosen as reference.
 
 % ---------------------------------------------------------------------
 \FloatBarrier
@@ -1140,8 +1138,8 @@ near the start, where $d_p$ is large (largest component about $7$), whereas the 
 
 \subsection{Noise-free comparison}
 
-With exact gradients (\cref{fig:grid-exact}, \cref{tab:grid-exact}), natural gradient reaches $\eta^*$ ($100\%$ of the gap) for every $\varepsilon$, monotonically, and reaches the target in $25$ to $4$ iterations as $\varepsilon$ grows from $0.003$ to $0.3$. Plain gradient ascent never exceeds $64.2\%$ of the gap: for every learning rate
-it ends below $58$, a policy that does not collect the bonuses ($57.6<\eta_{\mathrm{nb}}$), and the gradient there is small because it carries the factors $u_p(s)\pi(a\mid s)$. Larger learning rates only reach this level faster.
+With exact gradients (\cref{fig:grid-exact}, \cref{tab:grid-exact}), natural gradient reaches $\eta^*$ for every $\varepsilon$, monotonically, and faster as $\varepsilon$ grows. Plain gradient ascent never closes more than about $64\%$ of the gap. For every learning rate
+it ends near $57.6$, below even $\eta_{\mathrm{nb}}$, on a policy that does not collect the bonuses, and the gradient there is small because it carries the factors $u_p(s)\pi(a\mid s)$. Larger learning rates only reach this level faster.
 
 \begin{figure}[!htbp]
 \centering
@@ -1156,9 +1154,9 @@ it ends below $58$, a policy that does not collect the bonuses ($57.6<\eta_{\mat
 \toprule
  & final $\eta$ & gap closed & $50\%$ & $90\%$ & $95\%$ & $99\%$\\
 \midrule
-plain, $\mathrm{lr}=0.03$ & 52.86 & 60.4\% & 109 & --- & --- & ---\\
-plain, $\mathrm{lr}=0.3$ & 57.48 & 64.1\% & 12 & --- & --- & ---\\
-plain, $\mathrm{lr}=3$ & 57.63 & 64.2\% & 3 & --- & --- & ---\\
+plain, $\alpha=0.03$ & 52.86 & 60.4\% & 109 & --- & --- & ---\\
+plain, $\alpha=0.3$ & 57.48 & 64.1\% & 12 & --- & --- & ---\\
+plain, $\alpha=3$ & 57.63 & 64.2\% & 3 & --- & --- & ---\\
 natural, $\varepsilon=0.003$ & 102.55 & 100\% & 10 & 22 & 25 & 29\\
 natural, $\varepsilon=0.03$ & 102.55 & 100\% & 4 & 8 & 9 & 11\\
 natural, $\varepsilon=0.3$ & 102.55 & 100\% & 2 & 4 & 4 & 5\\
@@ -1169,8 +1167,8 @@ natural, $\varepsilon=0.3$ & 102.55 & 100\% & 2 & 4 & 4 & 5\\
 
 \subsection{The sampled estimator and covariance}
 
-With a batch of $4000$ episodes ($37512$ steps) at the initial policy, $62$ of the $82$ states are visited. The estimate of the plain gradient is accurate (cosine $0.999$ with the exact gradient, relative error $0.037$), because it is dominated by the frequently visited states. The estimate of the natural direction is much noisier
-(cosine $0.45$, relative error $0.90$): it gives all states the same weight, and the effective number of visits per visited state ranges from $1.0$ (minimum) through $54.1$ (median) to $9884$ (maximum). The noise sits in the rarely visited states, where the shrinkage $c_s$ and the ridge $\lambda_s$ of \eqref{eq:statewise} act;
+With a batch of $4000$ episodes at the initial policy, $62$ of the $82$ states are visited. The estimate of the plain gradient is accurate, with cosine $1.00$ with the exact gradient, because it is dominated by the frequently visited states. The estimate of the natural direction is much noisier
+with cosine $0.45$, because it gives all states the same weight while the effective number of visits per visited state ranges from $1$ to almost $10^4$, with a median of $54$. The noise sits in the rarely visited states, where the shrinkage $c_s$ and the ridge $\lambda_s$ of \eqref{eq:statewise} act;
 its effect on the trajectories is measured below.
 
 Under a rescaling of the chart with random $D$, the natural-gradient trajectories change by less than $10^{-12}$ in $\eta$ (exact and sampled; round-off level), whereas plain gradient ascent changes by $11.1$ in both cases (\cref{fig:grid-rescale}); this confirms \cref{prop:covariance-impl}, including the statewise ridge $\lambda_sD_s^{-2}$.
@@ -1183,11 +1181,10 @@ Under a rescaling of the chart with random $D$, the natural-gradient trajectorie
 
 \subsection{Sampled comparison}
 
-\Cref{fig:grid-sampled} and \cref{tab:grid-sampled} give the runs with samples ($10$ seeds, $15$ updates of $6000$ episodes). Plain gradient ascent solves none of the runs: its best setting reaches $57.4$ after $15$ updates, which is the exact plateau ($57.6$). Natural gradient with $\varepsilon\ge0.03$ solves $8$, $8$ and $7$ of the $10$ runs,
-after a median of $69000$, $45000$ and $36000$ episodes; with $\varepsilon=0.003$ and $0.01$ the budget is too small for $15$ updates (final returns $63.8$ and $86.5$). The sampled curves follow the exact ones with a delay: the exact curves reach the target after $9$, $6$ and $4$ iterations, i.e.\ $54000$, $36000$ and $24000$ episodes,
-against the sampled medians above, an additional $1.5$ to $2$ iterations. This shows that the statewise regularisation recovers the behaviour of the exact natural gradient despite the noisy direction estimate.
+\Cref{fig:grid-sampled} and \cref{tab:grid-sampled} give the runs with samples ($10$ seeds, $15$ updates of $6000$ episodes). Plain gradient ascent solves none of the runs: its best setting reaches $57.4$ after $15$ updates, which is the exact plateau ($57.6$). Natural gradient with $\varepsilon\ge0.03$ solves most of the runs, while with $\varepsilon=0.003$ and $0.01$ the budget is too small for $15$ updates. The sampled curves follow the exact ones with a delay: the exact curves reach the target after $9$, $6$ and $4$ iterations,
+while the sampled medians of \cref{tab:grid-sampled} correspond to an additional $1.5$ to $2$ iterations. This shows that the statewise regularisation recovers the behaviour of the exact natural gradient despite the noisy direction estimate.
 
-The runs that are not solved end on a route with a single bonus and a return of exactly $85.00$: the policy has saturated on a one-bonus route before the other bonuses have been explored, so that exploration, not the geometry of the update, is the limiting factor. This accounts for the gap between the mean final return ($99.0$) and $\eta^*$:
+The runs that are not solved end on a route with a single bonus and a return of exactly $85$: the policy has saturated on a one-bonus route before the other bonuses have been explored, so that exploration, not the geometry of the update, is the limiting factor. This accounts for the gap between the mean final return ($99.0$) and $\eta^*$:
 for instance $(8\cdot102.55+2\cdot85)/10=99.04$.
 
 \begin{figure}[!htbp]
@@ -1203,8 +1200,8 @@ for instance $(8\cdot102.55+2\cdot85)/10=99.04$.
 \toprule
  & final $\eta$ & worst & solved & median episodes & final routes (bonuses)\\
 \midrule
-plain, $\mathrm{lr}=0.3$ & 46.53 & 46.38 & 0/10 & --- & goal not reached (10)\\
-plain, $\mathrm{lr}=3$ & 57.38 & 57.36 & 0/10 & --- & goal not reached (10)\\
+plain, $\alpha=0.3$ & 46.53 & 46.38 & 0/10 & --- & goal not reached (10)\\
+plain, $\alpha=3$ & 57.38 & 57.36 & 0/10 & --- & goal not reached (10)\\
 natural, $\varepsilon=0.01$ & 86.52 & 84.21 & 0/10 & --- & 1 bonus (8), 3 bonuses (2)\\
 natural, $\varepsilon=0.03$ & 99.02 & 85.00 & 8/10 & 69000 & 1 bonus (2), 3 bonuses (8)\\
 natural, $\varepsilon=0.1$ & 99.04 & 85.00 & 8/10 & 45000 & 1 bonus (2), 3 bonuses (8)\\

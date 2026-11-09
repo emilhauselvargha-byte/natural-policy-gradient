@@ -1,4 +1,4 @@
-numpy
-matplotlib
+numpy>=2.2
+matplotlib>=3.10
 jupyter
-pillow  # only for scripts/extract_figures.py
+pillow>=10  # only for scripts/extract_figures.py

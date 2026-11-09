@@ -14,15 +14,31 @@ This project treats the set of policies as a manifold $\mathcal M$, parametrizat
 - shows that a global ridge on $F$ reintroduces the visitation weights, and uses a **statewise** regularisation instead;
 - tests everything on a Gaussian bandit and a gridworld with bonuses and pits.
 
+<p align="center">
+  <img src="docs/gridworld_exact.png" width="100%" alt="Exact plain gradient versus exact natural gradient on the gridworld">
+</p>
+<p align="center"><sub><b>Gridworld, noise-free updates.</b> Plain gradient ascent (left) plateaus near η ≈ 57 for every learning rate and never collects the bonuses; the natural gradient (right) reaches η* = 102.55 for every KL budget ε, within about 30 iterations even for the smallest.</sub></p>
+
 ## Main results
+
+<img src="docs/gridworld_layout.png" width="300" align="right" alt="Gridworld layout">
+
+The gridworld is a 5×5 grid with a start S, a terminal goal G worth +100, bonus squares worth +30 the first time they are entered in an episode, terminal pits worth −50 and a cost of −1 per move. Reaching the optimum $\eta^*$ requires collecting the bonuses on the way to the goal.
+
+<br clear="right">
 
 | | Bandit (3 arms) | Gridworld (5×5, 246-dim policy manifold) |
 |---|---|---|
 | Exact natural gradient | reaches $\eta^*$ for every $\varepsilon$ | reaches $\eta^*=102.55$ for every $\varepsilon$ |
-| Exact plain gradient | plateaus on the middle arm at small lr | stalls at ~64% of the gap, never collects the bonuses |
+| Exact plain gradient | plateaus on the middle arm at small $\alpha$ | stalls at ~64% of the gap, never collects the bonuses |
 | Sampled natural (damped) | 40/40 runs solved for every $\varepsilon$ | 7–8/10 runs solved ($\varepsilon \ge 0.03$); failures are an exploration issue |
-| Sampled plain | 29–39/40 solved, depends on lr | 0/10 solved |
+| Sampled plain | 29–39/40 solved, depends on $\alpha$ | 0/10 solved |
 | Rescaled chart | natural: identical to $10^{-15}$; plain: differs by up to 2.97 in $\eta$ | natural: identical to $10^{-12}$; plain: differs by 11.1 |
+
+<p align="center">
+  <img src="docs/bandit_invariance.png" width="100%" alt="Chart invariance test on the bandit">
+</p>
+<p align="center"><sub><b>Changing the chart on the bandit.</b> Rescaling the coordinates by c = 3 (dashed) traps plain gradient ascent on the middle arm and shifts its window of good learning rates, while the natural gradient follows the same curve in both charts.</sub></p>
 
 The natural gradient's advantage is invariance, a step size with an intrinsic meaning and robustness to its hyperparameter — not raw speed in every chart: with a favourable reference arm, tuned plain gradient can be faster on the bandit.
 
@@ -33,11 +49,12 @@ paper/
   natural_gradient_paper.tex   # the report (LaTeX source)
   natural_gradient_paper.pdf   # compiled report
   figures/                     # figures used by the report (extracted from the notebooks)
+docs/                          # README images (extracted from the notebooks)
 notebooks/
   natural_gradient_bandit.ipynb      # Gaussian bandit experiments
   natural_gradient_gridworld.ipynb   # gridworld experiments
 scripts/
-  extract_figures.py           # pulls the notebook plots into paper/figures/
+  extract_figures.py           # pulls the notebook plots into paper/figures/ and docs/
 ```
 
 ## Running
@@ -55,6 +72,10 @@ To rebuild the report after re-running the notebooks:
 python scripts/extract_figures.py
 cd paper && latexmk -pdf natural_gradient_paper.tex
 ```
+
+## License
+
+The code is released under the [MIT License](LICENSE). If you use this work, see [`CITATION.cff`](CITATION.cff).
 
 ## Reference
 

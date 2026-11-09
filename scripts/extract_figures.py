@@ -1,4 +1,5 @@
-"""Extract the plots embedded in the executed notebooks into paper/figures/*.pdf.
+"""Extract the plots embedded in the executed notebooks into paper/figures/*.pdf
+(and the README images into docs/*.png).
 
 The paper includes figures/<name>.pdf; the notebooks display their plots inline
 rather than saving them, so this script pulls the PNG outputs out of the .ipynb
@@ -13,6 +14,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "paper" / "figures"
+DOCS = ROOT / "docs"
 
 # paper figure -> list of (notebook, code-cell index) panels, left to right
 FIGURES = {
@@ -26,6 +28,12 @@ FIGURES = {
     "fig_grid_exact":     [("gridworld", 12)],
     "fig_grid_rescale":   [("gridworld", 18)],
     "fig_grid_sampled":   [("gridworld", 21)],
+}
+# README image -> same panel format, saved as PNG so GitHub renders it
+README_FIGURES = {
+    "gridworld_layout":  [("gridworld", 3)],
+    "gridworld_exact":   [("gridworld", 12)],
+    "bandit_invariance": [("bandit", 19), ("bandit", 21)],
 }
 NOTEBOOKS = {
     "bandit": ROOT / "notebooks" / "natural_gradient_bandit.ipynb",
@@ -58,6 +66,11 @@ def main():
         img = hstack([cell_image(nbs[nb], i) for nb, i in panels])
         img.save(OUT / f"{name}.pdf", resolution=200)
         print("wrote", (OUT / f"{name}.pdf").relative_to(ROOT))
+    DOCS.mkdir(exist_ok=True)
+    for name, panels in README_FIGURES.items():
+        img = hstack([cell_image(nbs[nb], i) for nb, i in panels])
+        img.save(DOCS / f"{name}.png", optimize=True)
+        print("wrote", (DOCS / f"{name}.png").relative_to(ROOT))
 
 
 if __name__ == "__main__":
