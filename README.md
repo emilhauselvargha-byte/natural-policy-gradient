@@ -4,7 +4,7 @@
 
 📄 **[Read the report (PDF)](paper/natural_gradient_paper.pdf)**
 
-Plain policy-gradient ascent is not chart invariant: the gradient $\nabla_\theta\eta$ is a covector, the update $\Delta\theta$ is a vector, and equating the two only works in one parametrization. Rescaling a coordinate by $c$ changes the effective step by $1/c^2$, and changing the reference action of a softmax changes the trajectory.
+Plain policy-gradient ascent is not chart invariant: the gradient $\nabla_\theta\eta$ of the expected return is a covector, the update $\Delta\theta$ is a vector, and equating the two only works in one parametrization. Rescaling a coordinate by $c$ changes the effective step by $1/c^2$, and changing the reference action of a softmax changes the trajectory.
 
 This project treats the set of policies as a manifold $\mathcal M$, parametrizations as charts, and uses the **Fisher metric** — the Hessian of the KL divergence at its minimum — to turn the differential of the return into an ascent direction. Following Kakade's *A Natural Policy Gradient* (2001), it
 
@@ -17,7 +17,9 @@ This project treats the set of policies as a manifold $\mathcal M$, parametrizat
 <p align="center">
   <img src="docs/gridworld_exact.png" width="100%" alt="Exact plain gradient versus exact natural gradient on the gridworld">
 </p>
-<p align="center"><sub><b>Gridworld, noise-free updates.</b> Plain gradient ascent (left) plateaus near η ≈ 57 for every learning rate and never collects the bonuses; the natural gradient (right) reaches η* = 102.55 for every KL budget ε, within about 30 iterations even for the smallest.</sub></p>
+<p align="center"><sub><b>Gridworld, noise-free updates.</b> The expected discounted return η of plain gradient ascent (left) plateaus near 57 for every learning rate, without collecting the bonuses. The natural gradient (right) reaches the optimum η* = 102.55 for every KL budget ε, within about 30 iterations even for the smallest.</sub></p>
+
+
 
 ## Main results
 
